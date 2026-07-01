@@ -409,16 +409,8 @@ function App(): React.JSX.Element {
             initRegionFlashMs: 1000,
             enableInitRegionFlash: true,
           }}
-          showDebugPickers={false}
-          showToolbar={false}
-          showColorBar
-          showStatusRow={false}
-          showOverlayButtons
           disabled={!isInteractive}
           initialSession={sessionDraft ?? undefined}
-          undoButtonText="撤销"
-          compareButtonText="对比原图"
-          compareExitButtonText="退出对比"
           onWatch={handleWatch}
           onPaintCallback={handlePaintCallback}
           onError={handleError}
@@ -611,6 +603,7 @@ const styles = StyleSheet.create({
   canvasHost: {
     flex: 1,
     position: 'relative',
+    height: 280,
   },
   canvas: {
     flex: 1,

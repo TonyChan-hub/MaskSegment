@@ -9,7 +9,6 @@ export type {
   MaskSegmentWatchDetail,
   MaskSegmentWatchState,
   MaskSemanticColor,
-  OverlayButtonRenderProps,
   PaintBrushRequiredPayload,
   PaintCallbackPayload,
   PaintSuccessPayload,

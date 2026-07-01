@@ -1,5 +1,4 @@
-import type { ReactNode } from 'react';
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import type { SegmentRegion } from '../utils/maskSegmentation';
 import type { MaskSemanticColor } from '../utils/maskSemanticPalette';
 
@@ -139,12 +138,6 @@ export type PaintBrushRequiredPayload = {
 
 export type PaintCallbackPayload = PaintSuccessPayload | PaintBrushRequiredPayload;
 
-export type OverlayButtonRenderProps = {
-  onPress: () => void;
-  disabled?: boolean;
-  text: string;
-};
-
 export type MaskSegmentCanvasRef = {
   reset: () => void;
   swap: (showOrigin?: boolean) => void;
@@ -183,30 +176,14 @@ export type MaskSegmentCanvasProps = {
   initialSession?: MaskSegmentSession;
   initialPaintColor?: BgrColor;
   initialPaintConfigJson?: Record<string, unknown>;
-  showDebugPickers?: boolean;
-  showToolbar?: boolean;
-  showColorBar?: boolean;
-  showStatusRow?: boolean;
-  showOverlayButtons?: boolean;
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
-  canvasStyle?: StyleProp<ViewStyle>;
   /**
    * Max container height available for this component (px). When set, the SDK
    * computes canvas dimensions as a fit-contain within (screenWidth - 20, maxHeight)
-   * instead of using the full image aspect at full screen width.  This prevents
-   * internal ScrollView scrolling for tall images.
+   * instead of using the full image aspect at full screen width.
    */
   maxHeight?: number;
-  undoButtonStyle?: StyleProp<ViewStyle>;
-  compareButtonStyle?: StyleProp<ViewStyle>;
-  undoButtonTextStyle?: StyleProp<TextStyle>;
-  compareButtonTextStyle?: StyleProp<TextStyle>;
-  undoButtonText?: string;
-  compareButtonText?: string;
-  compareExitButtonText?: string;
-  renderUndoButton?: (props: OverlayButtonRenderProps) => ReactNode;
-  renderCompareButton?: (props: OverlayButtonRenderProps) => ReactNode;
   onWatch?: (
     state: MaskSegmentWatchState,
     durationMs: number,
