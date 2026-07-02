@@ -1,93 +1,93 @@
 # MaskSegmentCanvas Example
 
-这是一个**完全模拟真实业务项目集成**的 Demo，展示如何在你的 React Native 工程中接入 `react-native-mask-segment-canvas`。
+A Demo project that **fully simulates real-world business integration**, showing how to integrate `react-native-mask-segment-canvas` into your React Native project.
 
-## 与库本身 Demo 的区别
+## Difference from the Library's Own Demo
 
-| 项目 | 引入方式 | 用途 |
+| Project | Import Method | Purpose |
 | ---- | -------- | ---- |
-| 根目录 `App.tsx` | `import ... from './src'`（内部源码） | 库作者自测 |
-| **本 example/** | `import ... from 'react-native-mask-segment-canvas'`（公开 API） | **业务集成参考** |
+| Root `App.tsx` | `import ... from './src'` (internal source) | Library author self-testing |
+| **This example/** | `import ... from 'react-native-mask-segment-canvas'` (public API) | **Business integration reference** |
 
-本 example 只依赖库的公开 API，不触碰 `src/` 内部实现，是你接入时可以直接复制的模板。
+This example only depends on the library's public API and does not touch any `src/` internals. It serves as a template you can directly copy into your project.
 
-## 快速开始
+## Quick Start
 
 ```bash
-# 1. 进入 example 目录
+# 1. Enter the example directory
 cd example
 
-# 2. 安装依赖（自动 link 父目录的库）
+# 2. Install dependencies (auto-links the parent library)
 npm install
 
-# 3. 应用 postinstall 补丁（patch-package 修补 react-native-fast-opencv）
-#    npm install 后自动执行，若未执行请手动：
+# 3. Apply postinstall patches (patch-package patches react-native-fast-opencv)
+#    Automatically runs after npm install. If it didn't, run manually:
 npx patch-package
 
-# 4. iOS：安装原生依赖
+# 4. iOS: Install native dependencies
 cd ios && pod install && cd ..
 
-# 5. 启动 Metro
+# 5. Start Metro
 npm start
 
-# 6. 另开终端运行
+# 6. In another terminal, run
 npm run ios
-# 或
+# or
 npm run android
 ```
 
-## 文件说明
+## File Overview
 
 ```
 example/
-├── App.tsx              # ★ 核心：完整的集成示例页面
-├── index.js             # RN 入口（注册 gesture-handler + Buffer polyfill）
-├── app.json             # 应用名配置
-├── package.json         # 独立依赖配置，"react-native-mask-segment-canvas": "file:.."
-├── metro.config.js      # Metro 配置（watchFolders 指向父目录）
-├── babel.config.js      # Babel 配置（含 reanimated 插件）
-├── tsconfig.json        # TypeScript 配置
-└── README.md            # 本文件
+├── App.tsx              # ★ Core: Complete integration example page
+├── index.js             # RN entry (registers gesture-handler + Buffer polyfill)
+├── app.json             # App name config
+├── package.json         # Standalone dependency config, "react-native-mask-segment-canvas": "file:.."
+├── metro.config.js      # Metro config (watchFolders pointing to parent directory)
+├── babel.config.js      # Babel config (includes reanimated plugin)
+├── tsconfig.json        # TypeScript config
+└── README.md            # This file
 ```
 
-## App.tsx 覆盖的功能点
+## Features Covered in App.tsx
 
-`App.tsx` 是一个可直接参考的完整页面，涵盖：
+`App.tsx` is a complete page you can reference directly, covering:
 
-| 功能 | 对应代码位置 |
+| Feature | Relevant Code Location |
 | ---- | ------------ |
-| **PNG 预热** | `useEffect` → `prewarmPngBgrCacheAsync` |
-| **状态管理** | `watchState` / `isInteractive` / `isOutlineReady` 等派生状态 |
-| **onWatch 回调** | `handleWatch` — 跟踪初始化阶段 |
-| **onPaintCallback** | `handlePaintCallback` — 处理上色成功 / 未选笔刷两种场景 |
-| **onError 回调** | `handleError` — 捕获分割/加载失败 |
-| **Ref 操作** | `save` / `reset` / `swap` / `clearAllPaint` / `session` |
-| **setPaintColor** | 预设笔刷色，通过 `ref.setPaintColor` 设置 |
-| **自定义语义色表** | `GYM_CUSTOM_COLORS` 示例 + 模式切换 UI |
-| **Pipeline 精度切换** | `pipelinePreset` 低/中/高精度切换 |
-| **Toast 提示** | 未选笔刷时 `brush_required` 回调 + 自定义 Toast |
-| **加载态/错误态 UI** | PNG 预热加载、初始化 Loading、错误展示 |
-| **草稿恢复** | `sessionDraft` 状态 + `initialSession` prop |
+| **PNG pre-warming** | `useEffect` → `prewarmPngBgrCacheAsync` |
+| **State management** | `watchState` / `isInteractive` / `isOutlineReady` derived states |
+| **onWatch callback** | `handleWatch` — tracks initialization stages |
+| **onPaintCallback** | `handlePaintCallback` — handles both successful paint and missing-brush scenarios |
+| **onError callback** | `handleError` — captures segmentation/load failures |
+| **Ref operations** | `save` / `reset` / `swap` / `clearAllPaint` / `session` |
+| **setPaintColor** | Preset brush colors via `ref.setPaintColor` |
+| **Custom semantic color table** | `GYM_CUSTOM_COLORS` example + mode toggle UI |
+| **Pipeline resolution toggle** | `pipelinePreset` low/medium/high resolution switching |
+| **Toast notifications** | `brush_required` callback when no brush is selected + custom Toast |
+| **Loading/error UI** | PNG pre-warm loading, initialization Loading, error display |
+| **Draft recovery** | `sessionDraft` state + `initialSession` prop |
 
-## 集成到自己项目
+## Integrating into Your Own Project
 
-### 方式一：npm install（推荐生产环境）
+### Option 1: npm install (recommended for production)
 
 ```bash
 npm install react-native-mask-segment-canvas
 ```
 
-### 方式二：本地联调（开发阶段）
+### Option 2: Local development
 
 ```bash
-# 在库目录
+# In the library directory
 npm link
 
-# 在你的项目
+# In your project
 npm link react-native-mask-segment-canvas
 ```
 
-你的 `metro.config.js` 需要添加：
+Your `metro.config.js` needs to add:
 
 ```js
 const path = require('path');
@@ -100,7 +100,7 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
 });
 ```
 
-### 方式三：file: 依赖（本 example 使用的方式）
+### Option 3: file: dependency (used by this example)
 
 ```json
 {
@@ -110,19 +110,19 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
 }
 ```
 
-### 必装 peerDependencies
+### Required peerDependencies
 
 ```bash
 npm install @shopify/react-native-skia react-native-reanimated react-native-fast-opencv react-native-fs buffer
-# 若使用相册选图
+# If using photo library picker
 npm install react-native-image-picker
-# 安全区适配
+# Safe area insets
 npm install react-native-safe-area-context
 ```
 
-### postinstall 配置
+### postinstall Configuration
 
-你的 `package.json` 需要：
+Your `package.json` needs:
 
 ```json
 {
@@ -135,37 +135,37 @@ npm install react-native-safe-area-context
 }
 ```
 
-## 常见问题
+## Common Issues
 
-**`npm install` 后报模块找不到？**
-- 确认已执行 `postinstall`（`npx patch-package`）
-- 检查 Metro 配置中 `watchFolders` 是否包含库目录
+**Getting "module not found" after `npm install`?**
+- Make sure `postinstall` ran (`npx patch-package`)
+- Check that Metro config's `watchFolders` includes the library directory
 
-**`pod install` 失败？**
+**`pod install` fails?**
 ```bash
 cd ios
 bundle install
 bundle exec pod install --repo-update
 ```
 
-**Android 编译错误？**
+**Android build errors?**
 ```bash
 cd android && ./gradlew clean && cd ..
 ```
 
-**运行时出现「重复模块」类错误（最常见）**
+**Duplicate module errors at runtime (most common)**
 
-在 monorepo、npm link、`file:..` 场景下，经常会遇到下面这些「类似问题」：
+In monorepo, npm link, or `file:..` setups, you'll frequently encounter these "similar-looking" errors:
 
 - `SkiaPictureView must be a function (received 'undefined')`
-- `createAnimatedNode: Animated node[...] already exists`（含 UIFrameGuarded 变体）
-- 其他 Fabric ViewManager / native module 单例冲突
+- `createAnimatedNode: Animated node[...] already exists` (including UIFrameGuarded variants)
+- Other Fabric ViewManager / native module singleton conflicts
 
-**原因**：Metro 同时加载了多份 `@shopify/react-native-skia`、`react-native-reanimated`、`react-native-gesture-handler`、`react-native-fast-opencv`、`react-native-safe-area-context` 等 peer 依赖。
+**Root cause**: Metro is loading multiple copies of `@shopify/react-native-skia`, `react-native-reanimated`, `react-native-gesture-handler`, `react-native-fast-opencv`, `react-native-safe-area-context`, and other peer dependencies.
 
-**推荐完整解决方案**（直接复制到你的项目）：
+**Recommended complete solution** (copy directly into your project):
 
-1. **index.js 最顶部**（必须在最前面）：
+1. **At the very top of index.js** (must come first):
 
    ```js
    import 'react-native-gesture-handler';
@@ -173,7 +173,7 @@ cd android && ./gradlew clean && cd ..
    import '@shopify/react-native-skia';
    ```
 
-2. **metro.config.js**（使用 extraNodeModules + blockList 双保险）：
+2. **metro.config.js** (use extraNodeModules + blockList for double safety):
 
    ```js
    const path = require('path');
@@ -202,10 +202,10 @@ cd android && ./gradlew clean && cd ..
    });
    ```
 
-   > `example/metro.config.js` 已经是按这个标准模板写的，可直接参考。
+   > `example/metro.config.js` is already written following this standard template. You can reference it directly.
 
-做完上面两步后，**必须**：
-- 重启 Metro（`npx react-native start --reset-cache`）
-- 重新安装 app（建议先 `cd android && ./gradlew clean` 或 iOS pod 后重跑）
+After completing the two steps above, you **must**:
+- Restart Metro (`npx react-native start --reset-cache`)
+- Reinstall the app (recommend `cd android && ./gradlew clean` first, or re-run after iOS pod install)
 
-这样能一次性解决所有「同类」重复模块导致的运行时错误。
+This will resolve all "similar" duplicate-module runtime errors in one shot.

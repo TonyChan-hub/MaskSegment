@@ -30,26 +30,26 @@ export type SegmentMaskResult = {
   baseboardBinary: Uint8Array;
   segCols: number;
   segRows: number;
-  /** splitWalls 时：墙像素 → 子区索引 0..N-1，非墙为 WALL_SUB_LABEL_NONE */
+  /** splitWalls only: wall pixels → sub-region index 0..N-1, non-wall is WALL_SUB_LABEL_NONE */
   wallSubLabels?: Uint8Array;
 };
 
 export type SegmentRegion = {
   id: number;
-  /** 语义分区名（door / cabinet / baseboard …） */
+  /** semantic partition name (door / cabinet / baseboard ...) */
   name: string;
-  /** 参考色 hex */
+  /** reference color hex */
   hex: string;
-  /** 参考色（BGR） */
+  /** reference color (BGR) */
   color: { b: number; g: number; r: number };
   polygons: { x: number; y: number }[][];
-  /** 上色/高亮蒙版：严格像素条带，不填充黑色空洞 */
+  /** paint/highlight mask: strict pixel strip, no black hole filling */
   maskPolygons?: { x: number; y: number }[][];
   hitPolygons?: { x: number; y: number }[][];
   outlinePolygons?: { x: number; y: number }[][];
   bbox: { x: number; y: number; w: number; h: number };
   area: number;
-  /** 踢脚线等细条区域，点击检测需加宽容差 */
+  /** baseboard etc. thin strip areas, click detection needs tolerance */
   thinStrip?: boolean;
 };
 
@@ -86,7 +86,7 @@ function isBaseboardEntry(entry: PaletteEntry): boolean {
   return entry.name === BASEBOARD_SEMANTIC_NAME;
 }
 
-/** 踢脚线：仅同行横向补缝，不纵向膨胀 */
+/** baseboard: only horizontal bridge within the same row, no vertical expansion */
 function bridgeBaseboardHorizontally(
   binary: Uint8Array,
   cols: number,
@@ -290,7 +290,7 @@ function bboxFromBinary(
   };
 }
 
-/** 从二值图逐行条带构建蒙版（供 Skia PathBuilder 使用） */
+/** build mask from binary mask row by row (for Skia PathBuilder) */
 export function appendMaskBinaryToPathBuilder(
   binary: Uint8Array,
   cols: number,
@@ -331,7 +331,7 @@ export function appendMaskBinaryToPathBuilder(
   }
 }
 
-/** 从语义标签逐行条带构建蒙版（避免维护多张二值图） */
+/** build mask from semantic labels row by row (avoid maintaining multiple binary masks) */
 export function appendLabelMaskToPathBuilder(
   labels: Uint8Array,
   semanticIndex: number,
@@ -416,7 +416,7 @@ export type RegionMaskData = {
   wallSubLabels?: Uint8Array;
 };
 
-/** 蒙版路径构建降采样（屏幕显示不需要分割分辨率，点击仍用全分辨率 pickMap） */
+/** downsample mask path building (screen display does not need segmentation resolution, click still uses full resolution pickMap) */
 export function downsampleMaskDataForPaths(
   maskData: RegionMaskData,
   maxLongSide: number,
@@ -463,7 +463,7 @@ export function downsampleMaskDataForPaths(
   };
 }
 
-/** 单次扫描构建所有分区 Skia 蒙版路径（单 label pass，避免每像素 × 语义数循环） */
+/** single pass build all partition Skia mask paths (single label pass, avoid per pixel × semantic count loop) */
 export function buildAllRegionMaskPaths(
   regions: SegmentRegion[],
   maskData: RegionMaskData,
@@ -604,7 +604,7 @@ function bboxFromPolygons(polygons: NormPoint[][]): SegmentRegion['bbox'] | null
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
 }
 
-/** baseboard：逐行 1px 条带贴合掩码；点击用横向补缝后的条带 */
+/** baseboard: row-wise 1px strips fitted to mask; horizontally bridged strips used for tap lookup */
 function extractBaseboardRowPolygons(
   binary: Uint8Array,
   cols: number,
@@ -811,7 +811,7 @@ function computeStrictBaseboardBand(
   return { minY, maxY };
 }
 
-/** 仅保留贴近真实踢脚线带的 junction 细条，避免上方墙柜交界零碎区域误入 */
+/** Keep only junction strips close to real baseboard, avoiding false positives from wall-cabinet boundary fragments */
 function isJunctionNearStrictBaseboard(
   idx: number,
   strictBaseboard: Uint8Array,
@@ -921,7 +921,7 @@ export function buildBaseboardBinaryFromMask(
   return buildBaseboardBinary(buffer, cols, rows);
 }
 
-/** 分割分辨率踢脚线二值图最近邻放大到点击查表分辨率（避免全图 junction 重算） */
+/** Upscale segmentation-resolution baseboard binary to tap-lookup resolution via nearest-neighbor (avoids full-image junction recomputation) */
 export function upscaleBinaryMask(
   src: Uint8Array,
   srcCols: number,
@@ -992,7 +992,7 @@ export function getMaskQuantKey(b: number, g: number, r: number): string {
   return maskQuantKey(b, g, r);
 }
 
-/** @deprecated 请使用 isBaseboardMaskPixel */
+/** @deprecated Use isBaseboardMaskPixel */
 export function isKickPlatePixel(b: number, g: number, r: number): boolean {
   return isStrictBaseboardPixel(b, g, r);
 }
@@ -1085,7 +1085,7 @@ type SemanticLayout = {
   strictBaseboardCount: number;
 };
 
-/** 单次扫描：像素语义标签 + 像素计数 + bbox（不写多张二值图） */
+/** Single-pass scan: pixel semantic labels + pixel count + bbox (avoids writing multiple binary images) */
 function buildSemanticLayout(
   buffer: Uint8Array,
   cols: number,
@@ -1693,7 +1693,7 @@ export function extractRegionsFromMaskBufferSync(
 
         if (!finalBbox) {
           if (__DEV__) {
-            console.warn(`[MaskSegment] ${name} 无有效轮廓，已跳过`);
+            console.warn(`[MaskSegment] ${name} no valid contour, skipped`);
           }
           return null;
         }
@@ -1714,7 +1714,7 @@ export function extractRegionsFromMaskBufferSync(
       } catch (error) {
         if (__DEV__) {
           console.warn(
-            `[MaskSegment] 色 #${label} 提取失败:`,
+            `[MaskSegment] Color #${label} extraction failed:`,
             error instanceof Error ? error.message : String(error),
           );
         }
@@ -1761,7 +1761,7 @@ export function extractRegionsFromMaskBufferSync(
   };
 }
 
-/** @deprecated 请使用 extractRegionsFromMaskBuffer */
+/** @deprecated Use extractRegionsFromMaskBuffer */
 export async function extractRegionsFromMask(
   maskMat: WrappedMat,
   options: {

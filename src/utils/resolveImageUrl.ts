@@ -10,7 +10,7 @@ export function hashUrl(url: string): string {
   return Math.abs(hash).toString(36);
 }
 
-/** 将本地路径或远程 URL 解析为 OpenCV / RNFS 可读的 PNG 本地路径 */
+/** Resolve a local path or remote URL to a PNG local path readable by OpenCV / RNFS */
 export async function resolveImageUrl(
   source: string,
   cacheFileName?: string,

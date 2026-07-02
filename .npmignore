@@ -24,6 +24,7 @@ tsconfig.build.json
 .cursor/
 agent-transcripts/
 assets/
+scripts/
 
 # Dependencies
 node_modules/

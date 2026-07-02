@@ -6,7 +6,7 @@ import { resizeBgrBuffer } from './pngImage';
 import type { BgrColor } from '../components/MaskSegmentCanvas.types';
 
 /* ==========================================================================
- * 类型
+ * Types
  * ========================================================================== */
 export type PaintResourceLayers = {
   lowFreqImage: SkImage;
@@ -27,14 +27,14 @@ export type WorkScaledBgr = {
 };
 
 /* ==========================================================================
- * 颜色工具
+ * Color utilities
  * ========================================================================== */
 export function bgrColorEquals(a: BgrColor, b: BgrColor): boolean {
   return a.b === b.b && a.g === b.g && a.r === b.r;
 }
 
 /* ==========================================================================
- * 几何工具
+ * Geometry utilities
  * ========================================================================== */
 export function rectsEqual(a: ContainRect, b: ContainRect): boolean {
   return a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h;
@@ -162,7 +162,7 @@ export function screenToCanvasCoords(
 }
 
 /* ==========================================================================
- * 点击检测
+ * Tap detection
  * ========================================================================== */
 export function pointInPolygon(
   x: number,
@@ -300,7 +300,7 @@ export function resolveRegionHit(
 }
 
 /* ==========================================================================
- * 踢脚线/掩码拾取
+ * Baseboard / mask picking
  * ========================================================================== */
 export function pickKickRegionFromMask(
   normX: number,
@@ -427,7 +427,7 @@ export function lookupRegionFromPickMap(
 }
 
 /* ==========================================================================
- * 资源释放
+ * Resource cleanup
  * ========================================================================== */
 export function releasePaintResourceLayers(layers: PaintResourceLayers | null) {
   if (!layers) {
@@ -444,7 +444,7 @@ export function releaseOriginSkImage(image: SkImage | null) {
 }
 
 /* ==========================================================================
- * 工作缓冲区缩放
+ * Work buffer scaling
  * ========================================================================== */
 export async function prepareWorkScaledBgrBuffer(
   bgrBuffer: Uint8Array,
@@ -462,7 +462,7 @@ export async function prepareWorkScaledBgrBuffer(
 }
 
 /* ==========================================================================
- * 分段计时工具（仅开发环境生效）
+ * Sectional timing utility (dev only)
  * ========================================================================== */
 let _timeLogTs = 0;
 export function timeLog(tag: string) {

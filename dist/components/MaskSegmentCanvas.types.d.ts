@@ -16,7 +16,7 @@ export type MaskSegmentWatchDetail = {
 export type PipelinePreset = 'high' | 'medium' | 'low';
 export type PipelineConfig = {
     maxImageLongSide?: number;
-    /** 高低频 LAB 处理最长边（可低于 maxImageLongSide，Shader 拉伸采样） */
+    /**  low/high frequency LAB processing longest side (can be lower than maxImageLongSide, Shader stretch sampling) */
     paintFreqMaxLongSide?: number;
     originPreviewMaxLongSide?: number;
     maskPathMaxLongSide?: number;
@@ -41,17 +41,17 @@ export type MaskSegmentConfig = {
     baseboardJunctionRowMarginPx?: number;
     baseboardJunctionVReachPx?: number;
     baseboardMinRunPx?: number;
-    /** 在 wall 掩码内按纹理边界细分为 wall-1、wall-2… */
+    /** only used in wall mask, split wall into wall-1, wall-2... by texture boundary */
     splitWalls?: boolean;
-    /** 墙壁子区最大数量 */
+    /** wall mask only, max number of wall sub-regions */
     splitWallsMaxCount?: number;
-    /** 碎块最小面积比（相对 seg 总像素） */
+    /** wall mask only, min area ratio (relative to seg total pixels) */
     splitWallsMinAreaRatio?: number;
-    /** Lab 色度 + 高频纹理特征距离平方阈值（不含亮度，削弱光影影响） */
+    /** wall mask only, Lab chroma + high-frequency texture feature distance squared threshold (excluding brightness, reducing shadow impact) */
     splitWallsColorDistSq?: number;
-    /** 色度平滑半径（像素），仅用于纹理能量计算 */
+    /** wall mask only, chroma smoothing radius (pixels), only used for texture energy calculation */
     splitWallsChromaBlurRadius?: number;
-    /** 低饱和（白/灰墙）判定半径，用于与有色墙强制分界 */
+    /** wall mask only, low saturation (white/gray wall) junction radius, used to force separate colored walls */
     splitWallsNeutralChromaMax?: number;
 };
 export type PaintConfig = {
@@ -111,7 +111,7 @@ export type PaintSuccessPayload = {
 };
 export type PaintBrushRequiredPayload = {
     kind: 'brush_required';
-    /** 未选笔刷时的提示文案 */
+    /** brush not selected, hint text */
     hint: string;
     regionId: number;
     regionName: string;
@@ -137,13 +137,13 @@ export type MaskSegmentCanvasRef = {
 export type MaskSegmentCanvasProps = {
     originUrl?: string;
     maskUrl?: string;
-    /** @deprecated 使用 originUrl */
+    /** @deprecated use originUrl */
     originImgPath?: string;
-    /** @deprecated 使用 maskUrl */
+    /** @deprecated use maskUrl */
     maskImgPath?: string;
-    /** 掩码语义识别色，初始化配置；等同 maskConfig.semanticColors */
+    /** mask semantic recognition colors, initialization configuration; equivalent to maskConfig.semanticColors */
     semanticColors?: MaskSemanticColor[];
-    /** 分区虚线高亮色，初始化配置；等同 paintConfig.regionOverlayFill */
+    /** partition dashed outline highlight color, initialization configuration; equivalent to paintConfig.regionOverlayFill */
     regionOutlineColor?: string;
     maskConfig?: MaskSegmentConfig;
     /** Performance preset (high / medium / low). Merged with pipelineConfig overrides. */
@@ -176,4 +176,3 @@ export type MaskSegmentCanvasProps = {
     onExported?: (result: SavePaintResult) => void;
 };
 export type { SegmentRegion, MaskSemanticColor };
-//# sourceMappingURL=MaskSegmentCanvas.types.d.ts.map

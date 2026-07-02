@@ -13,12 +13,12 @@ export type PaintResourceBatch = {
   layers: FreqLayerImages;
 };
 
-/** OpenCV 8-bit Lab L 通道（BGR 输入，供单测与近似对照） */
+/** OpenCV 8-bit Lab L channel (BGR input, for single test and approximate comparison) */
 export function bgrToLabL(b: number, g: number, r: number): number {
   return bgrToLab(b, g, r).l;
 }
 
-/** BGR → 8-bit Lab（L/a/b 均映射到 0–255） */
+/** BGR → 8-bit Lab (L/a/b mapped to 0–255) */
 export function bgrToLab(
   b: number,
   g: number,
@@ -82,7 +82,7 @@ export function releaseFreqLayerImages(layers: FreqLayerImages | null) {
   layers?.highFreqImage.dispose();
 }
 
-/** 16-bit 有符号差分 → 8-bit 高频层（detail * gain + 128） */
+/** 16-bit signed difference → 8-bit high frequency layer (detail * gain + 128) */
 async function buildHighFreqMatNative(
   lMat: WrappedMat,
   lLowMat: WrappedMat,
@@ -137,7 +137,7 @@ async function downscaleMatForFreq(
   return { mat: resized, cols: freqCols, rows: freqRows, owned: true };
 }
 
-/** 复用已上传的 BGR Mat，避免重复 bufferToMat + JS↔原生往返 */
+/** reuse the uploaded BGR Mat, avoid duplicate bufferToMat + JS↔native roundtrip */
 export async function prepareFreqLayersFromWorkMat(
   workMat: WrappedMat,
   cols: number,
@@ -217,7 +217,7 @@ export async function prepareFreqLayersFromWorkMat(
   }
 }
 
-/** 单次 Mat 上传 → 高低频 + 原图 Skia（并行，高低频先就绪时可回调） */
+/** single time Mat upload → high/low frequency + original Skia (parallel, callback when high/low frequency is ready) */
 export async function preparePaintResourcesFromWorkBuffer(
   bgrBuffer: Uint8Array,
   cols: number,
@@ -255,7 +255,7 @@ export async function preparePaintResourcesFromWorkBuffer(
   }
 }
 
-/** @deprecated 测试兼容；生产路径请用 preparePaintResourcesFromWorkBuffer */
+/** @deprecated test compatibility; production path please use preparePaintResourcesFromWorkBuffer */
 export async function prepareFreqLayersFromBgrBuffer(
   bgrBuffer: Uint8Array,
   cols: number,
@@ -273,7 +273,7 @@ export async function prepareFreqLayersFromBgrBuffer(
   }
 }
 
-/** 原图 BGR → Skia RGBA（OpenCV cvtColor，与 freq 并行） */
+/** original BGR → Skia RGBA (OpenCV cvtColor, parallel with freq) */
 export async function originBgrBufferToSkiaImage(
   bgrBuffer: Uint8Array,
   cols: number,

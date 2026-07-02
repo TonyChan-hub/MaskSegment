@@ -78,4 +78,3 @@ export declare function releasePaintResourceLayers(layers: PaintResourceLayers |
 export declare function releaseOriginSkImage(image: SkImage | null): void;
 export declare function prepareWorkScaledBgrBuffer(bgrBuffer: Uint8Array, cols: number, rows: number, workScale: number): Promise<WorkScaledBgr>;
 export declare function timeLog(tag: string): void;
-//# sourceMappingURL=canvasGeometry.d.ts.map

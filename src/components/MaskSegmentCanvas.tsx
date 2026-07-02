@@ -111,7 +111,7 @@ import {
 } from '../utils/canvasGeometry';
 
 /* ==========================================================================
- * 组件主体
+ * component
  * ========================================================================== */
 const MaskSegmentCanvas = forwardRef<MaskSegmentCanvasRef, MaskSegmentCanvasProps>(
   function MaskSegmentCanvas(props, ref) {
@@ -424,7 +424,7 @@ const MaskSegmentCanvas = forwardRef<MaskSegmentCanvasRef, MaskSegmentCanvasProp
   // High-resolution offscreen Canvas (sized to the work buffer resolution) whose content
   // is the full shader composition (PaintShaderLayer at 0,0,workW,workH). On save() we
   // call makeImageSnapshot() on it to get a "what you see in the editor, at source res"
-  // PNG bytes. This is the preferred "保存快照" path and avoids CPU recolor entirely
+  // PNG bytes. This is the preferred "snapshot" path and avoids CPU recolor entirely
   // for the exported After.
   const highResExportCanvasRef = useCanvasRef();
   const [exportCanvasSize, setExportCanvasSize] = useState<{ w: number; h: number } | null>(null);
@@ -1927,7 +1927,7 @@ const MaskSegmentCanvas = forwardRef<MaskSegmentCanvasRef, MaskSegmentCanvasProp
           const region = regionsRef.current.find(r => r.id === regionId);
           onPaintCallbackRef.current?.({
             kind: 'brush_required',
-            hint: '请先选择笔刷颜色',
+            hint: 'please select a brush color first',
             regionId,
             regionName: region?.name ?? String(regionId),
           });
@@ -1965,7 +1965,7 @@ const MaskSegmentCanvas = forwardRef<MaskSegmentCanvasRef, MaskSegmentCanvasProp
           runOnJS(onFinalizeJS)(e.x, e.y);
         });
     },
-    [],   // 仅创建一次手势对象；所有回调都通过 Ref 读取最新值，避免初始化期间重复创建导致 Reanimated 节点冲突
+    [],   // Create gesture object once; all callbacks read latest values via Ref to avoid Reanimated node conflicts during initialization
   );
 
   // ── Gesture: pinch-zoom (focal-point scale + two-finger pan; max 5×) ────

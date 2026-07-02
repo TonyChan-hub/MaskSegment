@@ -2,17 +2,17 @@
  * @format
  */
 
-// 【关键 - 必须最顶部】按此顺序提前导入带 JSI/原生注册副作用的库。
-// 推荐顺序：
+// [CRITICAL - Must be at the very top] Import libraries with JSI/native registration side effects in this order.
+// Recommended order:
 //   1. react-native-gesture-handler
 //   2. react-native-reanimated
 //   3. @shopify/react-native-skia
 //
-// 配合 example/metro.config.js 的 extraNodeModules + blockList 使用，
-// 能彻底避免 monorepo/file: 场景下的重复模块问题：
+// Used together with example/metro.config.js extraNodeModules + blockList,
+// this completely avoids duplicate module issues in monorepo/file: setups:
 //   - SkiaPictureView config getter undefined
 //   - createAnimatedNode: Animated node already exists
-//   - 其他 Fabric / ViewManager 冲突
+//   - Other Fabric / ViewManager conflicts
 import 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import '@shopify/react-native-skia';

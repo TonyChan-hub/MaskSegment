@@ -15,4 +15,3 @@ export declare function buildAllRegionOutlinePaths(regions: SegmentRegion[], mas
     w: number;
     h: number;
 }): Map<number, SkPath>;
-//# sourceMappingURL=maskOutlinePaths.d.ts.map

@@ -16,7 +16,7 @@ export type CompositePaintInput = {
      * Preferred path for rich export: if the caller (MaskSegmentCanvas) provides bytes
      * that were produced by makeImageSnapshot() on a high-resolution Canvas rendering the
      * exact same PaintShaderLayer + regionPaint SkSL at work resolution, we write them
-     * directly. This captures the live editor 质感 (lighting + high/low-freq texture)
+     * directly. This captures the live editor appearance (lighting + high/low-freq texture)
      * without CPU pixel math and without a second declarative drawAsImage.
      */
     exportPngBytes?: Uint8Array;
@@ -34,11 +34,10 @@ export type CompositePaintInput = {
     renderWidth?: number;
     renderHeight?: number;
 };
-/** 将上色区域导出为 recolored PNG。
- * 优先级（从好到保底）：
- * 1. exportPngBytes（调用方用 makeImageSnapshot 在高分辨率 Canvas 上捕获的完整 shader 结果）—— 推荐的“保存快照”路径，无 CPU 逐像素，无二次 drawAsImage。
- * 2. shaderTextures + render*（通过 renderPaintedImageOffscreen / drawAsImage 重建同一套 PaintShaderLayer + SkSL）。
- * 3. CPU 逐像素 recolor（flat，无光照/纹理，仅作最后兜底，保证保存不中断）。
+/** Export painted regions as a recolored PNG.
+ * Priority (best to fallback):
+ * 1. exportPngBytes (full shader result captured by caller via makeImageSnapshot on high-res Canvas) — recommended "snapshot" path, no CPU per-pixel, no secondary drawAsImage.
+ * 2. shaderTextures + render* (rebuild same PaintShaderLayer + SkSL via renderPaintedImageOffscreen / drawAsImage).
+ * 3. CPU per-pixel recolor (flat, no lighting/texture, last-resort fallback ensuring save never breaks).
  */
 export declare function compositePaintedImage(input: CompositePaintInput): Promise<SavePaintResult>;
-//# sourceMappingURL=compositePaintedImage.d.ts.map

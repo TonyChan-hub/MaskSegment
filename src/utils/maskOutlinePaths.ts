@@ -2,7 +2,7 @@ import { Skia, type SkPath } from '@shopify/react-native-skia';
 import { getMaskSegmentRuntimeConfig } from './maskSegmentRuntime';
 import type { SegmentRegion, RegionMaskData } from './maskSegmentation';
 
-/** 分区虚线高亮：从与填充蒙版相同的像素网格提取外轮廓 */
+/** partition dashed highlight: extract outer contour from the same pixel grid as the fill mask */
 type GridPoint = { x: number; y: number };
 
 type GridEdge = {

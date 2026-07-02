@@ -1,12 +1,1 @@
-import { Skia, AlphaType, ColorType, } from '@shopify/react-native-skia';
-/** 连续 RGBA 缓冲 → Skia 图像（高低频 / 工作分辨率原图内存直传，避免 PNG 落盘） */
-export function rgbaBufferToSkiaImage(buffer, cols, rows) {
-    const data = Skia.Data.fromBytes(buffer);
-    return Skia.Image.MakeImage({
-        width: cols,
-        height: rows,
-        alphaType: AlphaType.Opaque,
-        colorType: ColorType.RGBA_8888,
-    }, data, cols * 4);
-}
-//# sourceMappingURL=skiaImage.js.map
+"use strict";var p=Object.defineProperty;var n=Object.getOwnPropertyDescriptor;var g=Object.getOwnPropertyNames;var i=Object.prototype.hasOwnProperty;var u=(a,e)=>{for(var t in e)p(a,t,{get:e[t],enumerable:!0})},y=(a,e,t,o)=>{if(e&&typeof e=="object"||typeof e=="function")for(let m of g(e))!i.call(a,m)&&m!==t&&p(a,m,{get:()=>e[m],enumerable:!(o=n(e,m))||o.enumerable});return a};var f=a=>y(p({},"__esModule",{value:!0}),a);var k={};u(k,{rgbaBufferToSkiaImage:()=>h});module.exports=f(k);var r=require("@shopify/react-native-skia");function h(a,e,t){const o=r.Skia.Data.fromBytes(a);return r.Skia.Image.MakeImage({width:e,height:t,alphaType:r.AlphaType.Opaque,colorType:r.ColorType.RGBA_8888},o,e*4)}

@@ -1,4 +1,4 @@
-/** SkSL：分区上色（保留原图明暗与纹理，按 paintColorMap 叠色） */
+/** SkSL： split wall regions by texture boundary, then paint the regions (preserve original image luminance and texture, overlay paintColorMap) */
 export const REGION_PAINT_SKSL = `
 uniform shader originTex;
 uniform shader paintColorTex;

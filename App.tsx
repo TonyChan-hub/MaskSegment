@@ -1,9 +1,9 @@
 /**
  * Mask Segment Demo App
- * 基于 OpenCV + Skia 的掩码分区交互画布
+ * Mask segmentation canvas based on OpenCV + Skia
  *
- * 注意：这是库开发自测用的 Demo，直接引用 ./src。
- * 业务项目集成演示请参考 example/ 目录（使用公开包名导入）。
+ * Note: This is a demo for library development testing, directly referencing ./src.
+ * For business project integration demonstration, please refer to the example/ directory (import using the public package name).
  */
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -37,15 +37,15 @@ function formatWatchStatus(state: MaskSegmentWatchState | ''): string {
     return '';
   }
   if (state === 'interactive') {
-    return '可上色（轮廓加载中…）';
+    return 'Colorable (outline loading...)';
   }
   if (state === 'mask_paths_ready') {
-    return '就绪';
+    return 'Ready';
   }
   if (state === 'error') {
-    return '失败';
+    return 'Failed';
   }
-  return `加载中：${state}`;
+  return `Loading: ${state}`;
 }
 
 function App(): React.JSX.Element {
@@ -103,8 +103,8 @@ function App(): React.JSX.Element {
           <>
             {watchState ? (
               <Text style={styles.watchText}>
-                状态: {formatWatchStatus(watchState)}
-                {isFullyReady ? ' · 轮播虚线已就绪' : null}
+                Status: {formatWatchStatus(watchState)}
+                {isFullyReady ? ' · Carousel dashed line ready' : null}
               </Text>
             ) : null}
             <View style={styles.canvasHost}>
@@ -153,14 +153,14 @@ function App(): React.JSX.Element {
             </View>
             {sessionDraft ? (
               <Text style={styles.sessionText}>
-                已恢复 MMKV 草稿（{sessionDraft.painted.length} 区域）
+                Restored MMKV draft ({sessionDraft.painted.length} regions)
               </Text>
             ) : null}
           </>
         ) : (
           <View style={styles.center}>
             <ActivityIndicator size="large" color="#333" />
-            <Text style={styles.loadingText}>加载健身房测试图…</Text>
+            <Text style={styles.loadingText}>Loading gym test image...</Text>
           </View>
         )}
       </SafeAreaView>

@@ -51,20 +51,20 @@ declare const cv: {
     imread(path: string, flags?: number): Promise<WrappedMat>;
     createMat(cols: number, rows: number, channels?: 1 | 3 | 4): WrappedMat;
     cvtColor(src: WrappedMat, code: ColorConversionCodes): Promise<WrappedMat>;
-    /** 三通道色彩空间转换（BGR/Lab 等） */
+    /** Three-channel color space conversion (BGR/Lab etc.) */
     cvtColorBgr(src: WrappedMat, code: ColorConversionCodes): WrappedMat;
-    /** 灰度 Mat → 三通道 BGR（供 Skia 显示） */
+    /** Grayscale Mat → 3-channel BGR (for Skia display) */
     grayToBgr(src: WrappedMat): WrappedMat;
-    /** 掩码统一为三通道 BGR；已是 3 通道则原样返回，色序由分割侧 swapBr 检测 */
+    /** Normalize mask to 3-channel BGR; return as-is if already 3-channel, color order checked by segmentation side swapBr */
     ensureBgr3(src: WrappedMat): Promise<WrappedMat>;
-    /** JS 二值缓冲（0/255）→ 单通道 Mat */
+    /** JS binary buffer (0/255) → single-channel Mat */
     binaryBufferToMat(buffer: Uint8Array, cols: number, rows: number): WrappedMat;
-    /** 连续 BGR 缓冲 → 三通道 Mat */
+    /** Continuous BGR buffer → 3-channel Mat */
     bgrBufferToMat(buffer: Uint8Array, cols: number, rows: number): WrappedMat;
-    /** 将 JS 侧生成的灰度二值图写入临时 PGM 并读回 Mat */
+    /** Write JS-side grayscale binary image to temp PGM and read back as Mat */
     grayBufferToMat(gray: Uint8Array, cols: number, rows: number): Promise<WrappedMat>;
     /**
-     * 导出 Mat 像素。先 clone 保证内存连续，避免原生 matToBuffer 忽略 step 导致行错位。
+     * Export Mat pixels. Clone first to ensure contiguous memory, avoiding row misalignment from native matToBuffer ignoring step.
      */
     matToBuffer(src: WrappedMat): {
         buffer: Uint8Array;
@@ -77,19 +77,19 @@ declare const cv: {
         width: number;
         height: number;
     }, interpolation?: InterpolationFlags): Promise<void>;
-    /** BGR 缓冲原生缩放（掩码用语义色，默认最近邻） */
+    /** Native BGR buffer resize (mask uses semantic colors, default nearest-neighbor) */
     resizeBgrBuffer(buffer: Uint8Array, srcCols: number, srcRows: number, dstCols: number, dstRows: number, interpolation?: InterpolationFlags): Promise<Uint8Array>;
-    /** BGR Mat → RGBA 连续缓冲（供 Skia 直传） */
+    /** BGR Mat → RGBA continuous buffer (for Skia direct transfer) */
     matToRgbaBuffer(src: WrappedMat): Promise<{
         buffer: Uint8Array;
         cols: number;
         rows: number;
     }>;
-    /** BGR Mat → Skia 图像（跳过低频/高频 PNG 编码） */
+    /** BGR Mat → Skia image (bypasses low/high freq PNG encoding) */
     matToSkiaImage(src: WrappedMat): Promise<SkImage | null>;
-    /** 单通道灰度 Mat → Skia RGBA（跳过 BGR 伪彩 + 四通道 matToBuffer） */
+    /** Single-channel grayscale Mat → Skia RGBA (bypasses BGR pseudocolor + 4-channel matToBuffer) */
     grayMatToSkiaImage(src: WrappedMat): SkImage | null;
-    /** 连续 BGR 缓冲 → Skia 图像（工作分辨率原图 / 高低频，复用 OpenCV 解码结果） */
+    /** Continuous BGR buffer → Skia image (work-resolution origin / freq layers, reusing OpenCV decode result) */
     bgrBufferToSkiaImage(buffer: Uint8Array, cols: number, rows: number): Promise<SkImage | null>;
     threshold(src: WrappedMat, dst: WrappedMat, thresh: number, maxval: number, type: number): Promise<void>;
     getStructuringElement(shape: MorphShapes, ksize: {
@@ -113,4 +113,3 @@ declare const cv: {
     imwrite(path: string, mat: WrappedMat): Promise<void>;
 };
 export default cv;
-//# sourceMappingURL=opencvAdapter.d.ts.map

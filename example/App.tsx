@@ -1,12 +1,12 @@
 /**
- * MaskSegmentCanvas 业务集成 Demo
+ * MaskSegmentCanvas business integration demo
  *
- * 本文件完全模拟真实业务项目的集成方式：
- * - 只通过 `import ... from 'react-native-mask-segment-canvas'` 使用公开 API
- * - 不依赖库的内部实现（不 import ../src）
- * - 覆盖：PNG 预热、状态管理、回调处理、Ref 操作、草稿恢复、错误处理
+ * This file fully simulates the integration method of a real business project:
+ * - Only use public API through `import ... from 'react-native-mask-segment-canvas'`
+ * - Do not depend on the internal implementation of the library (do not import ../src)
+ * - Overlay: PNG preheating, status management, callback processing, Ref operations, draft recovery, error handling
  *
- * 可直接复制本文件到你自己的 React Native 项目中作为参考。
+ * You can directly copy this file to your own React Native project as a reference.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -42,8 +42,8 @@ import MaskSegmentCanvas, {
 } from 'react-native-mask-segment-canvas';
 
 // ============================================================================
-// 测试图片 — 两组示例图，支持切换
-// 业务项目接入时替换为你的图片路径（file:// 或 http(s)://）
+// test images — two sets of example images, support switching
+// replace your image path (file:// or http(s)://) when integrating into your business project
 // ============================================================================
 const TEST_IMAGE_GROUPS: Array<{
   label: string;
@@ -53,14 +53,14 @@ const TEST_IMAGE_GROUPS: Array<{
   maskCacheName: string;
 }> = [
   {
-    label: '图片组 1',
+    label: 'picture group 1',
     origin: require('./assets/origin.png'),
     mask: require('./assets/mask.png'),
     originCacheName: 'example_origin_g1.png',
     maskCacheName: 'example_mask_g1.png',
   },
   {
-    label: '图片组 2',
+    label: 'picture group 2',
     origin: require('./assets/origin-1.png'),
     mask: require('./assets/mask-1.png'),
     originCacheName: 'example_origin_g2.png',
@@ -69,7 +69,7 @@ const TEST_IMAGE_GROUPS: Array<{
 ];
 
 // ============================================================================
-// 自定义语义色表示例（健身房场景）
+// custom semantic colors example (gym scene)
 // ============================================================================
 const GYM_CUSTOM_COLORS: MaskSemanticColor[] = [
   { name: 'wall', hex: '#4363D8', bgr: { b: 216, g: 99, r: 67 } },
@@ -81,17 +81,17 @@ const GYM_CUSTOM_COLORS: MaskSemanticColor[] = [
 ];
 
 // ============================================================================
-// 预设笔刷色（底部色条之外，业务可通过 ref.setPaintColor 设置）
+// preset brush colors (outside the bottom color bar, business can set through ref.setPaintColor)
 // ============================================================================
 const PAINT_PRESETS: Array<{ label: string; color: BgrColor }> = [
-  { label: '象牙白', color: { b: 200, g: 230, r: 245 } },
-  { label: '米黄', color: { b: 150, g: 220, r: 245 } },
-  { label: '浅灰', color: { b: 180, g: 180, r: 180 } },
-  { label: '淡蓝', color: { b: 220, g: 200, r: 170 } },
+  { label: 'Ivory white', color: { b: 200, g: 230, r: 245 } },
+  { label: 'Yellow', color: { b: 150, g: 220, r: 245 } },
+  { label: 'Light gray', color: { b: 180, g: 180, r: 180 } },
+  { label: 'Light blue', color: { b: 220, g: 200, r: 170 } },
 ];
 
 // ============================================================================
-// watchState 工具
+// watchState tools
 // ============================================================================
 const INTERACTIVE_STATES: MaskSegmentWatchState[] = [
   'interactive',
@@ -99,13 +99,13 @@ const INTERACTIVE_STATES: MaskSegmentWatchState[] = [
 ];
 
 // ============================================================================
-// 主页面
+// main page
 // ============================================================================
 function App(): React.JSX.Element {
   const canvasRef = useRef<MaskSegmentCanvasRef>(null);
 
   // --------------------------------------------------------------------------
-  // 状态
+  // State
   // --------------------------------------------------------------------------
   const [imagePaths, setImagePaths] = useState<{
     origin: string;
@@ -119,14 +119,14 @@ function App(): React.JSX.Element {
   const [saveResult, setSaveResult] = useState<SavePaintResult | null>(null);
   const [sessionDraft] = useState<MaskSegmentSession | null>(null);
 
-  // Demo 模式
+  // Demo mode
   const [useCustomColors, setUseCustomColors] = useState(false);
   const [splitWalls, setSplitWalls] = useState(false);
   const [pipelinePreset, setPipelinePreset] = useState<PipelinePreset>('medium');
   const [groupIndex, setGroupIndex] = useState(0);
 
   // --------------------------------------------------------------------------
-  // 派生状态
+  // derived state
   // --------------------------------------------------------------------------
   const isInteractive = INTERACTIVE_STATES.includes(
     watchState as MaskSegmentWatchState,
@@ -141,7 +141,7 @@ function App(): React.JSX.Element {
   const semanticColors = useCustomColors ? GYM_CUSTOM_COLORS : MASK_SEMANTIC_COLORS;
 
   // --------------------------------------------------------------------------
-  // 初始化：解析测试图路径（require → 本地 PNG 缓存路径）
+  // Init: resolve test image paths (require → local PNG cache path)
   // --------------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
@@ -177,7 +177,7 @@ function App(): React.JSX.Element {
   }, [groupIndex]);
 
   // --------------------------------------------------------------------------
-  // Toast 提示
+  // Toast message
   // --------------------------------------------------------------------------
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
@@ -185,7 +185,7 @@ function App(): React.JSX.Element {
   }, []);
 
   // --------------------------------------------------------------------------
-  // onWatch 回调
+  // onWatch callback
   // --------------------------------------------------------------------------
   const handleWatch = useCallback(
     (
@@ -204,18 +204,18 @@ function App(): React.JSX.Element {
   );
 
   // --------------------------------------------------------------------------
-  // onPaintCallback — 处理上色成功 / 未选笔刷两种场景
+  // onPaintCallback — handle paint success / brush not selected two scenarios
   // --------------------------------------------------------------------------
   const handlePaintCallback = useCallback((payload: PaintCallbackPayload) => {
     if (payload.kind === 'brush_required') {
-      // 用户未选笔刷时点击了分区，业务侧弹提示引导选色
+      // user did not select a brush, the business side pops up a prompt to guide selection of color
       showToast(payload.hint);
-      console.log('[Example] 需选笔刷:', payload.regionName);
+      console.log('[Example] Need to select a brush:', payload.regionName);
       return;
     }
-    // 上色成功
+    // paint success
     console.log(
-      '[Example] 上色成功:',
+      '[Example] Paint success:',
       payload.regionName,
       `(${payload.regionId})`,
       payload.color,
@@ -223,7 +223,7 @@ function App(): React.JSX.Element {
   }, [showToast]);
 
   // --------------------------------------------------------------------------
-  // onError 回调
+  // onError callback
   // --------------------------------------------------------------------------
   const handleError = useCallback((message: string) => {
     setErrorMessage(message);
@@ -231,7 +231,7 @@ function App(): React.JSX.Element {
   }, []);
 
   // --------------------------------------------------------------------------
-  // Ref 操作封装
+  // Ref operations encapsulation
   // --------------------------------------------------------------------------
   const handleSave = useCallback(async () => {
     if (!isInteractive) return;
@@ -239,10 +239,10 @@ function App(): React.JSX.Element {
       const result = await canvasRef.current?.save();
       if (result) {
         setSaveResult(result);
-        Alert.alert('保存成功', `路径: ${result.filePath}\n已上色 ${result.paintedCount} 个区域`);
+        Alert.alert('Save success', `Path: ${result.filePath}\nPainted ${result.paintedCount} regions`);
       }
     } catch (e) {
-      Alert.alert('保存失败', e instanceof Error ? e.message : String(e));
+      Alert.alert('Save failed', e instanceof Error ? e.message : String(e));
     }
   }, [isInteractive]);
 
@@ -250,16 +250,16 @@ function App(): React.JSX.Element {
   const handleSwap = useCallback(() => canvasRef.current?.swap(), []);
   const handleClearAll = useCallback(() => {
     canvasRef.current?.clearAllPaint();
-    showToast('已清空全部上色');
+    showToast('All paint cleared');
   }, [showToast]);
 
   const handleExportSession = useCallback(() => {
     const session = canvasRef.current?.session();
     if (session) {
-      console.log('[Example] 会话快照:', JSON.stringify(session, null, 2));
+      console.log('[Example] Session snapshot:', JSON.stringify(session, null, 2));
       Alert.alert(
-        '会话快照',
-        `已上色 ${session.painted.length} 个区域\n可存入 MMKV / AsyncStorage 实现草稿恢复`,
+        'Session snapshot',
+        `Painted ${session.painted.length} regions\nCan be stored in MMKV / AsyncStorage to implement draft recovery`,
       );
     }
   }, []);
@@ -267,19 +267,19 @@ function App(): React.JSX.Element {
   const handleSetPaintColor = useCallback(
     (color: BgrColor, label: string) => {
       canvasRef.current?.setPaintColor(color, { preset: label });
-      showToast(`已选择笔刷: ${label}`);
+      showToast(`Selected brush: ${label}`);
     },
     [showToast],
   );
 
   // --------------------------------------------------------------------------
-  // 渲染：错误 / 加载 / 就绪
+  // render: error / loading / ready
   // --------------------------------------------------------------------------
   if (pathsError) {
     return (
       <SafeAreaView style={styles.root}>
         <View style={styles.center}>
-          <Text style={styles.errorText}>图片加载失败</Text>
+          <Text style={styles.errorText}>Image loading failed</Text>
           <Text style={styles.errorDetail}>{pathsError}</Text>
         </View>
       </SafeAreaView>
@@ -291,7 +291,7 @@ function App(): React.JSX.Element {
       <SafeAreaView style={styles.root}>
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#4363D8" />
-          <Text style={styles.loadingText}>正在预热 PNG 缓存…</Text>
+          <Text style={styles.loadingText}>Preheating PNG cache…</Text>
         </View>
       </SafeAreaView>
     );
@@ -301,11 +301,11 @@ function App(): React.JSX.Element {
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
 
-      {/* 顶部：状态 + 模式切换 */}
+      {/* top: status + mode switch */}
       <View style={styles.topBar}>
         <View style={styles.topBarRow}>
           <Text style={styles.statusLabel}>
-            状态:{' '}
+            Status:{' '}
             <Text
               style={[
                 styles.statusValue,
@@ -313,19 +313,19 @@ function App(): React.JSX.Element {
                 watchState === 'error' && styles.statusError,
               ]}
             >
-              {watchState || '初始化…'}
+              {watchState || 'Initializing…'}
             </Text>
-            {isOutlineReady ? ' · 轮播就绪' : ''}
-            {isInteractive && !isOutlineReady ? ' · 轮廓加载中' : ''}
+            {isOutlineReady ? ' · Carousel ready' : ''}
+            {isInteractive && !isOutlineReady ? ' · Outline loading' : ''}
           </Text>
           <Text style={styles.regionCount}>
             {watchDetail.regionCount != null
-              ? `${watchDetail.regionCount} 个分区`
+              ? `${watchDetail.regionCount} partitions`
               : ''}
           </Text>
         </View>
 
-        {/* 模式切换 */}
+        {/* mode switch */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -337,7 +337,7 @@ function App(): React.JSX.Element {
             onPress={() => setUseCustomColors(false)}
           >
             <Text style={[styles.modeChipText, !useCustomColors && styles.modeChipTextActive]}>
-              默认色表
+              Default color palette
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -345,7 +345,7 @@ function App(): React.JSX.Element {
             onPress={() => setUseCustomColors(true)}
           >
             <Text style={[styles.modeChipText, useCustomColors && styles.modeChipTextActive]}>
-              自定义色表
+              Custom color palette
             </Text>
           </TouchableOpacity>
           <Text style={styles.modeDivider}>|</Text>
@@ -368,7 +368,7 @@ function App(): React.JSX.Element {
               onPress={() => setPipelinePreset(p)}
             >
               <Text style={[styles.modeChipText, pipelinePreset === p && styles.modeChipTextActive]}>
-                {p === 'low' ? '低精度' : p === 'medium' ? '中精度' : '高精度'}
+                {p === 'low' ? 'Low precision' : p === 'medium' ? 'Medium precision' : 'High precision'}
               </Text>
             </TouchableOpacity>
           ))}
@@ -378,13 +378,13 @@ function App(): React.JSX.Element {
             onPress={() => setSplitWalls(v => !v)}
           >
             <Text style={[styles.modeChipText, splitWalls && styles.modeChipTextActive]}>
-              墙壁细分
+              (split walls)
             </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
 
-      {/* 画布 */}
+      {/* canvas */}
       <View style={styles.canvasHost}>
         <MaskSegmentCanvas
           key={`image-group-${groupIndex}-split-${splitWalls ? 1 : 0}`}
@@ -416,12 +416,12 @@ function App(): React.JSX.Element {
           onError={handleError}
         />
 
-        {/* 初始化加载遮罩 */}
+        {/* initialization loading mask */}
         {isInitLoading && (
           <View style={styles.initOverlay} pointerEvents="none">
             <ActivityIndicator size="small" color="#4363D8" />
             <Text style={styles.initOverlayText}>
-              初始化中：{watchState}
+              Initializing: {watchState}
             </Text>
           </View>
         )}
@@ -434,15 +434,15 @@ function App(): React.JSX.Element {
         </View>
       ) : null}
 
-      {/* 底部：业务操作栏 / Ref 方法演示 */}
+      {/* bottom: business operation bar / Ref method demonstration */}
       <View style={styles.bottomBar}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.bottomBarContent}
         >
-          {/* 预设笔刷（替代底部色条） */}
-          <Text style={styles.sectionLabel}>预设笔刷:</Text>
+          {/* preset brush (replace bottom color bar) */}
+          <Text style={styles.sectionLabel}>Preset brush:</Text>
           {PAINT_PRESETS.map(p => (
             <TouchableOpacity
               key={p.label}
@@ -456,50 +456,50 @@ function App(): React.JSX.Element {
 
           <View style={styles.divider} />
 
-          {/* Ref 操作 */}
-          <Text style={styles.sectionLabel}>操作:</Text>
+          {/* Ref operations */}
+          <Text style={styles.sectionLabel}>Operations:</Text>
           <TouchableOpacity
             style={[styles.actionBtn, styles.actionBtnDanger]}
             onPress={handleReset}
             disabled={!isInteractive}
           >
-            <Text style={styles.actionBtnText}>撤销</Text>
+            <Text style={styles.actionBtnText}>Undo</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={handleSwap}
             disabled={!isInteractive}
           >
-            <Text style={styles.actionBtnText}>对比</Text>
+            <Text style={styles.actionBtnText}>Compare</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={handleClearAll}
             disabled={!isInteractive}
           >
-            <Text style={styles.actionBtnText}>清空</Text>
+            <Text style={styles.actionBtnText}>Clear</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.actionBtn, styles.actionBtnPrimary]}
             onPress={handleSave}
             disabled={!isInteractive}
           >
-            <Text style={styles.actionBtnTextPrimary}>保存</Text>
+            <Text style={styles.actionBtnTextPrimary}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={handleExportSession}
             disabled={!isInteractive}
           >
-            <Text style={styles.actionBtnText}>导出会话</Text>
+            <Text style={styles.actionBtnText}>Export session</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
 
-      {/* 错误展示 */}
+      {/* error display */}
       {errorMessage ? (
         <View style={styles.errorBar}>
-          <Text style={styles.errorBarText}>错误: {errorMessage}</Text>
+          <Text style={styles.errorBarText}>Error: {errorMessage}</Text>
         </View>
       ) : null}
     </SafeAreaView>
@@ -507,7 +507,7 @@ function App(): React.JSX.Element {
 }
 
 // ============================================================================
-// 样式
+// styles
 // ============================================================================
 const styles = StyleSheet.create({
   root: {
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // 顶部状态栏
+  // top status bar
   topBar: {
     paddingHorizontal: 12,
     paddingTop: 8,
@@ -599,7 +599,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
 
-  // 画布
+  // canvas
   canvasHost: {
     flex: 1,
     position: 'relative',
@@ -639,7 +639,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 
-  // 底部操作栏
+  // bottom operation bar
   bottomBar: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#e8e8e8',
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
 
-  // 笔刷按钮
+  // brush button
   paintBtn: {
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -681,7 +681,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 
-  // 操作按钮
+  // operation button
   actionBtn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -708,7 +708,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // 错误条
+  // error bar
   errorBar: {
     backgroundColor: '#fff0f0',
     paddingHorizontal: 12,

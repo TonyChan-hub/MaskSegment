@@ -128,7 +128,7 @@ test('splitWalls:true splits wall into wall-1 and wall-2 by chroma', () => {
   const cols = 24;
   const rows = 12;
   const base = buildSyntheticWallResult(cols, rows);
-  // 左蓝右暖色（色度差异明显）
+  // Left blue, right warm (obvious chroma difference)
   const origin = buildSplitOrigin(cols, rows, [220, 50, 30], [50, 200, 240]);
 
   setMaskSegmentRuntimeConfig({
@@ -163,7 +163,7 @@ test('same-color wall with lighting gradient stays one region', () => {
     for (let x = 0; x < cols; x++) {
       const t = x / Math.max(1, cols - 1);
       const i = (y * cols + x) * 3;
-      // 同一蓝色墙面，从左暗阴影到右亮部
+      // Same blue wall, from dark shadow on left to bright area on right
       origin[i] = Math.round(160 + t * 70);
       origin[i + 1] = Math.round(70 + t * 50);
       origin[i + 2] = Math.round(40 + t * 30);

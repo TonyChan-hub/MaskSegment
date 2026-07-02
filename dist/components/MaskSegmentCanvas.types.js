@@ -1,2 +1,1 @@
-export {};
-//# sourceMappingURL=MaskSegmentCanvas.types.js.map
+"use strict";var r=Object.defineProperty;var a=Object.getOwnPropertyDescriptor;var s=Object.getOwnPropertyNames;var l=Object.prototype.hasOwnProperty;var g=(n,e,t,o)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of s(e))!l.call(n,i)&&i!==t&&r(n,i,{get:()=>e[i],enumerable:!(o=a(e,i))||o.enumerable});return n};var m=n=>g(r({},"__esModule",{value:!0}),n);var u={};module.exports=m(u);
