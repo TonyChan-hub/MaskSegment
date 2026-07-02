@@ -1,6 +1,6 @@
 /**
- * OpenCV 便捷适配层
- * 将 react-native-fast-opencv 的 invoke API 封装为 MaskSegmentCanvas 所需的 async 风格接口
+ * OpenCV convenience adapter
+ * Wraps react-native-fast-opencv invoke API into async-style interfaces needed by MaskSegmentCanvas
  */
 import RNFS from 'react-native-fs';
 import {
@@ -86,12 +86,12 @@ async function readImageFromPath(path: string, grayscale = false): Promise<Wrapp
   const base64 = await RNFS.readFile(filePath, 'base64');
   const srcMat = OpenCV.base64ToMat(base64);
 
-  // 16-bit PNG 降级: toJSValue 可能崩溃，先解析 PNG 头
+  // 16-bit PNG fallback: toJSValue may crash, parse PNG header first
   let pngHeader;
   try {
     pngHeader = readPngHeaderFromBase64(base64);
   } catch {
-    // 非 PNG 不传
+    // Not a PNG, skip
   }
 
   const { mat, extraReleaseIds } = ensureMat8U(srcMat, pngHeader);
@@ -127,7 +127,7 @@ function createSize(width: number, height: number) {
   return OpenCV.createObject(ObjectType.Size, width, height);
 }
 
-/** OpenCV GaussianBlur 要求核宽高为正奇数 */
+/** OpenCV GaussianBlur requires positive odd kernel width/height */
 function normalizeGaussianKernel(size: number): number {
   const n = Math.max(1, Math.round(size));
   return n % 2 === 0 ? n + 1 : n;
@@ -194,14 +194,14 @@ const cv = {
     return dst;
   },
 
-  /** 三通道色彩空间转换（BGR/Lab 等） */
+  /** Three-channel color space conversion (BGR/Lab etc.) */
   cvtColorBgr(src: WrappedMat, code: ColorConversionCodes): WrappedMat {
     const dst = cv.createMat(src.cols, src.rows, 3);
     OpenCV.invoke('cvtColor', src.mat, dst.mat, code);
     return dst;
   },
 
-  /** 灰度 Mat → 三通道 BGR（供 Skia 显示） */
+  /** Grayscale Mat → 3-channel BGR (for Skia display) */
   grayToBgr(src: WrappedMat): WrappedMat {
     const dst = cv.createMat(src.cols, src.rows, 3);
     OpenCV.invoke(
@@ -213,7 +213,7 @@ const cv = {
     return dst;
   },
 
-  /** 掩码统一为三通道 BGR；已是 3 通道则原样返回，色序由分割侧 swapBr 检测 */
+  /** Normalize mask to 3-channel BGR; return as-is if already 3-channel, color order checked by segmentation side swapBr */
   async ensureBgr3(src: WrappedMat): Promise<WrappedMat> {
     if (src.channels === 3) {
       return src;
@@ -228,7 +228,7 @@ const cv = {
     return dst;
   },
 
-  /** JS 二值缓冲（0/255）→ 单通道 Mat */
+  /** JS binary buffer (0/255) → single-channel Mat */
   binaryBufferToMat(
     buffer: Uint8Array,
     cols: number,
@@ -238,7 +238,7 @@ const cv = {
     return new WrappedMat(mat, cols, rows, 1);
   },
 
-  /** 连续 BGR 缓冲 → 三通道 Mat */
+  /** Continuous BGR buffer → 3-channel Mat */
   bgrBufferToMat(
     buffer: Uint8Array,
     cols: number,
@@ -248,7 +248,7 @@ const cv = {
     return new WrappedMat(mat, cols, rows, 3);
   },
 
-  /** 将 JS 侧生成的灰度二值图写入临时 PGM 并读回 Mat */
+  /** Write JS-side grayscale binary image to temp PGM and read back as Mat */
   async grayBufferToMat(
     gray: Uint8Array,
     cols: number,
@@ -279,7 +279,7 @@ const cv = {
   },
 
   /**
-   * 导出 Mat 像素。先 clone 保证内存连续，避免原生 matToBuffer 忽略 step 导致行错位。
+   * Export Mat pixels. Clone first to ensure contiguous memory, avoiding row misalignment from native matToBuffer ignoring step.
    */
   matToBuffer(src: WrappedMat): {
     buffer: Uint8Array;
@@ -330,7 +330,7 @@ const cv = {
     dst.rows = size.height;
   },
 
-  /** BGR 缓冲原生缩放（掩码用语义色，默认最近邻） */
+  /** Native BGR buffer resize (mask uses semantic colors, default nearest-neighbor) */
   async resizeBgrBuffer(
     buffer: Uint8Array,
     srcCols: number,
@@ -354,7 +354,7 @@ const cv = {
     }
   },
 
-  /** BGR Mat → RGBA 连续缓冲（供 Skia 直传） */
+  /** BGR Mat → RGBA continuous buffer (for Skia direct transfer) */
   async matToRgbaBuffer(src: WrappedMat): Promise<{
     buffer: Uint8Array;
     cols: number;
@@ -375,13 +375,13 @@ const cv = {
     }
   },
 
-  /** BGR Mat → Skia 图像（跳过低频/高频 PNG 编码） */
+  /** BGR Mat → Skia image (bypasses low/high freq PNG encoding) */
   async matToSkiaImage(src: WrappedMat): Promise<SkImage | null> {
     const { buffer, cols, rows } = await cv.matToRgbaBuffer(src);
     return rgbaBufferToSkiaImage(buffer, cols, rows);
   },
 
-  /** 单通道灰度 Mat → Skia RGBA（跳过 BGR 伪彩 + 四通道 matToBuffer） */
+  /** Single-channel grayscale Mat → Skia RGBA (bypasses BGR pseudocolor + 4-channel matToBuffer) */
   grayMatToSkiaImage(src: WrappedMat): SkImage | null {
     const { buffer, cols, rows } = cv.matToBuffer(src);
     const pixelCount = cols * rows;
@@ -397,7 +397,7 @@ const cv = {
     return rgbaBufferToSkiaImage(rgba, cols, rows);
   },
 
-  /** 连续 BGR 缓冲 → Skia 图像（工作分辨率原图 / 高低频，复用 OpenCV 解码结果） */
+  /** Continuous BGR buffer → Skia image (work-resolution origin / freq layers, reusing OpenCV decode result) */
   async bgrBufferToSkiaImage(
     buffer: Uint8Array,
     cols: number,

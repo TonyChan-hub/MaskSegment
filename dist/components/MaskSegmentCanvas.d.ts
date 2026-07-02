@@ -3,4 +3,3 @@ import type { MaskSegmentCanvasProps, MaskSegmentCanvasRef } from './MaskSegment
 export type { MaskSegmentCanvasProps, MaskSegmentCanvasRef, MaskSegmentSession, MaskSegmentWatchState, PaintedRegionRecord, BgrColor, MaskSemanticColor, } from './MaskSegmentCanvas.types';
 declare const MaskSegmentCanvas: React.ForwardRefExoticComponent<MaskSegmentCanvasProps & React.RefAttributes<MaskSegmentCanvasRef>>;
 export default MaskSegmentCanvas;
-//# sourceMappingURL=MaskSegmentCanvas.d.ts.map

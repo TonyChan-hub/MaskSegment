@@ -86,7 +86,7 @@ function createPaintShaderTree(props: PaintShaderLayerProps) {
   );
 }
 
-/** Canvas 内全屏上色 Shader 层 */
+/** Full-screen paint Shader layer inside Canvas */
 export function PaintShaderLayer(props: PaintShaderLayerProps) {
   return createPaintShaderTree(props);
 }
@@ -110,7 +110,7 @@ export type OffscreenPaintInput = PaintShaderTextures & {
   showOrigin?: boolean;
 };
 
-/** 离屏渲染与预览同源的 shader 合成图 */
+/** Offscreen-rendered shader composite matching the preview */
 export async function renderPaintedImageOffscreen(
   input: OffscreenPaintInput,
 ): Promise<SkImage | null> {

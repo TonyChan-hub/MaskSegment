@@ -1,4 +1,4 @@
-// 补充 React Native 运行时可用的全局 API 类型声明
+// Supplemental type declarations for global APIs available at React Native runtime
 
 declare var performance: {
   now(): number;

@@ -21,7 +21,7 @@ export type PaintShaderLayerProps = PaintShaderTextures & {
     height: number;
     showOrigin?: boolean;
 };
-/** Canvas 内全屏上色 Shader 层 */
+/** Full-screen paint Shader layer inside Canvas */
 export declare function PaintShaderLayer(props: PaintShaderLayerProps): React.JSX.Element;
 export declare function createPaintColorMapForPaint(pickBuffer: Uint8Array, cols: number, rows: number, paintedRegions: Map<number, BgrColor>): SkImage;
 export type OffscreenPaintInput = PaintShaderTextures & {
@@ -29,7 +29,7 @@ export type OffscreenPaintInput = PaintShaderTextures & {
     height: number;
     showOrigin?: boolean;
 };
-/** 离屏渲染与预览同源的 shader 合成图 */
+/** Offscreen-rendered shader composite matching the preview */
 export declare function renderPaintedImageOffscreen(input: OffscreenPaintInput): Promise<SkImage | null>;
 export declare function releasePaintShaderTextures(textures: {
     originImage?: SkImage | null;
@@ -37,4 +37,3 @@ export declare function releasePaintShaderTextures(textures: {
     lowFreqImage?: SkImage | null;
     highFreqImage?: SkImage | null;
 }): void;
-//# sourceMappingURL=paintShaderRuntime.d.ts.map

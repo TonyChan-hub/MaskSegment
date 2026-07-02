@@ -57,7 +57,7 @@ index 79df697..9bd84f2 100644
  public:
      static cv::Mat str2mat(const string& imageBase64);
      static string mat2str(const Mat& img, std::string &format);
-+    /** 16-bit / float PNG 等非常规 depth 统一缩放到 8-bit，避免 matToBuffer(uint8) 误读 */
++    /** 16-bit / float PNG and other non-standard depths uniformly scaled to 8-bit, avoid matToBuffer(uint8) misread */
 +    static cv::Mat ensure8U(const Mat& img);
  
  private:

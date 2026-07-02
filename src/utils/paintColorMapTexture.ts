@@ -144,7 +144,7 @@ function dilateRgbaPremul(
   return dst;
 }
 
-/** 按 pickMap 展开的上色颜色图（与 pick 同尺寸，未上色像素 a=0）。支持 maskFeather 产生软边缘 alpha。 */
+/** Paint color map expanded by pickMap (same size as pick, unpainted pixels have a=0). Supports maskFeather for soft-edge alpha. */
 export function buildPaintColorMapImage(
   pickBuffer: Uint8Array,
   cols: number,

@@ -3,7 +3,7 @@ import { getMaskSegmentRuntimeConfig } from './maskSegmentRuntime';
 import type { SegmentMaskResult, SegmentRegion } from './maskSegmentation';
 import { getSemanticColorByName } from './maskSemanticPalette';
 
-/** 非墙像素在 wallSubLabels 中的占位值 */
+/** Placeholder value for non-wall pixels in wallSubLabels */
 export const WALL_SUB_LABEL_NONE = 255;
 
 type WallComponent = {
@@ -54,7 +54,7 @@ function chromaDistSq(a0: number, b0: number, a1: number, b1: number): number {
   return da * da + db * db;
 }
 
-/** 白/灰墙与蓝/有色墙、或两种不同色相墙之间强制视为材质边界 */
+/** Force a material boundary between white/gray walls and colored walls, or between two different-hue walls */
 function isCrossMaterialBoundary(
   a0: number,
   b0: number,
@@ -110,7 +110,8 @@ function isWallPixel(
 }
 
 /**
- * 4-连通区域生长：与连通域色度均值比较，避免链式桥接；中性/有色墙强制分界。
+ * 4-connected component growth: compares against component chroma mean to avoid chain bridging;
+ * forces separation at neutral/colored wall boundaries.
  */
 function labelWallComponents(
   labels: Uint8Array,
@@ -505,7 +506,7 @@ function dilatePickBuffer1px(
 }
 
 /**
- * 在语义分割完成后，将 wall 区域按原图纹理特征细分为 wall-1、wall-2…
+ * After semantic segmentation, subdivide the wall region into wall-1, wall-2… by source image texture features
  */
 export function splitWallRegionsByTexture(
   result: SegmentMaskResult,
@@ -579,7 +580,7 @@ export function splitWallRegionsByTexture(
     return result;
   }
 
-  // 按面积降序，截断至 maxCount
+  // Sort by area descending, truncate to maxCount
   const ranked = finalStats
     .map((s, idx) => ({ ...s, origIdx: idx }))
     .filter(s => s.area > 0)

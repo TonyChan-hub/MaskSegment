@@ -12,16 +12,16 @@ export type SegmentMaskResult = {
     baseboardBinary: Uint8Array;
     segCols: number;
     segRows: number;
-    /** splitWalls 时：墙像素 → 子区索引 0..N-1，非墙为 WALL_SUB_LABEL_NONE */
+    /** splitWalls only: wall pixels → sub-region index 0..N-1, non-wall is WALL_SUB_LABEL_NONE */
     wallSubLabels?: Uint8Array;
 };
 export type SegmentRegion = {
     id: number;
-    /** 语义分区名（door / cabinet / baseboard …） */
+    /** semantic partition name (door / cabinet / baseboard ...) */
     name: string;
-    /** 参考色 hex */
+    /** reference color hex */
     hex: string;
-    /** 参考色（BGR） */
+    /** reference color (BGR) */
     color: {
         b: number;
         g: number;
@@ -31,7 +31,7 @@ export type SegmentRegion = {
         x: number;
         y: number;
     }[][];
-    /** 上色/高亮蒙版：严格像素条带，不填充黑色空洞 */
+    /** paint/highlight mask: strict pixel strip, no black hole filling */
     maskPolygons?: {
         x: number;
         y: number;
@@ -51,26 +51,13 @@ export type SegmentRegion = {
         h: number;
     };
     area: number;
-    /** 踢脚线等细条区域，点击检测需加宽容差 */
+    /** baseboard etc. thin strip areas, click detection needs tolerance */
     thinStrip?: boolean;
 };
 export declare function buildRegionOutlinePolygons(reg: SegmentRegion): NormPoint[][];
-export declare function buildRegionOutlinePathForRegion(regionId: number, regions: SegmentRegion[], maskData: RegionMaskData, rect: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}, normSeed?: {
-    x: number;
-    y: number;
-}): SkPath;
-export declare function buildAllRegionOutlinePaths(regions: SegmentRegion[], maskData: RegionMaskData, rect: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-}): Map<number, SkPath>;
-/** 从二值图逐行条带构建蒙版（供 Skia PathBuilder 使用） */
+import { buildAllRegionOutlinePaths, buildRegionOutlinePathForRegion } from './maskOutlinePaths';
+export { buildAllRegionOutlinePaths, buildRegionOutlinePathForRegion };
+/** build mask from binary mask row by row (for Skia PathBuilder) */
 export declare function appendMaskBinaryToPathBuilder(binary: Uint8Array, cols: number, rows: number, rect: {
     x: number;
     y: number;
@@ -81,7 +68,7 @@ export declare function appendMaskBinaryToPathBuilder(binary: Uint8Array, cols: 
     lineTo: (x: number, y: number) => unknown;
     close: () => unknown;
 }, minRunPx?: number): void;
-/** 从语义标签逐行条带构建蒙版（避免维护多张二值图） */
+/** build mask from semantic labels row by row (avoid maintaining multiple binary masks) */
 export declare function appendLabelMaskToPathBuilder(labels: Uint8Array, semanticIndex: number, cols: number, rows: number, rect: {
     x: number;
     y: number;
@@ -99,9 +86,9 @@ export type RegionMaskData = {
     rows: number;
     wallSubLabels?: Uint8Array;
 };
-/** 蒙版路径构建降采样（屏幕显示不需要分割分辨率，点击仍用全分辨率 pickMap） */
+/** downsample mask path building (screen display does not need segmentation resolution, click still uses full resolution pickMap) */
 export declare function downsampleMaskDataForPaths(maskData: RegionMaskData, maxLongSide: number): RegionMaskData;
-/** 单次扫描构建所有分区 Skia 蒙版路径（单 label pass，避免每像素 × 语义数循环） */
+/** single pass build all partition Skia mask paths (single label pass, avoid per pixel × semantic count loop) */
 export declare function buildAllRegionMaskPaths(regions: SegmentRegion[], maskData: RegionMaskData, rect: {
     x: number;
     y: number;
@@ -113,12 +100,12 @@ type NormPoint = {
     y: number;
 };
 export declare function buildBaseboardBinaryFromMask(buffer: Uint8Array, cols: number, rows: number): Uint8Array;
-/** 分割分辨率踢脚线二值图最近邻放大到点击查表分辨率（避免全图 junction 重算） */
+/** Upscale segmentation-resolution baseboard binary to tap-lookup resolution via nearest-neighbor (avoids full-image junction recomputation) */
 export declare function upscaleBinaryMask(src: Uint8Array, srcCols: number, srcRows: number, dstCols: number, dstRows: number): Uint8Array;
 export declare function isBaseboardMaskPixel(buffer: Uint8Array, cols: number, rows: number, x: number, y: number, baseboardBinary?: Uint8Array | null): boolean;
 export { isStrictBaseboardPixel as isBaseboardPixel } from './maskSemanticPalette';
 export declare function getMaskQuantKey(b: number, g: number, r: number): string;
-/** @deprecated 请使用 isBaseboardMaskPixel */
+/** @deprecated Use isBaseboardMaskPixel */
 export declare function isKickPlatePixel(b: number, g: number, r: number): boolean;
 export declare function extractRegionsFromMaskBuffer(buffer: Uint8Array, cols: number, rows: number, _options: {
     minArea: number;
@@ -128,9 +115,8 @@ export declare function extractRegionsFromMaskBufferSync(buffer: Uint8Array, col
     minArea: number;
     approxEpsilon: number;
 }): SegmentMaskResult;
-/** @deprecated 请使用 extractRegionsFromMaskBuffer */
+/** @deprecated Use extractRegionsFromMaskBuffer */
 export declare function extractRegionsFromMask(maskMat: WrappedMat, options: {
     minArea: number;
     approxEpsilon: number;
 }): Promise<SegmentRegion[]>;
-//# sourceMappingURL=maskSegmentation.d.ts.map

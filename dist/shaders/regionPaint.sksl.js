@@ -1,5 +1,4 @@
-/** SkSL：分区上色（保留原图明暗与纹理，按 paintColorMap 叠色） */
-export const REGION_PAINT_SKSL = `
+"use strict";var t=Object.defineProperty;var n=Object.getOwnPropertyDescriptor;var o=Object.getOwnPropertyNames;var h=Object.prototype.hasOwnProperty;var s=(e,a)=>{for(var i in a)t(e,i,{get:a[i],enumerable:!0})},f=(e,a,i,r)=>{if(a&&typeof a=="object"||typeof a=="function")for(let l of o(a))!h.call(e,l)&&l!==i&&t(e,l,{get:()=>a[l],enumerable:!(r=n(a,l))||r.enumerable});return e};var p=e=>f(t({},"__esModule",{value:!0}),e);var g={};s(g,{REGION_PAINT_SKSL:()=>u});module.exports=p(g);const u=`
 uniform shader originTex;
 uniform shader paintColorTex;
 uniform shader lowFreqTex;
@@ -36,8 +35,8 @@ half4 main(float2 coord) {
   }
 
   half4 paintEntry = paintColorTex.eval(coord);
-  // The paintColorMap uses Unpremul alpha: painted pixels → (R,G,B,255),
-  // transparent pixels → (0,0,0,0). GPU bilinear sampling interpolates
+  // The paintColorMap uses Unpremul alpha: painted pixels \u2192 (R,G,B,255),
+  // transparent pixels \u2192 (0,0,0,0). GPU bilinear sampling interpolates
   // straight-alpha values, so at boundaries rgb = trueColor * sampled.a
   // (contaminated with black from the transparent neighbour).
   //
@@ -48,8 +47,8 @@ half4 main(float2 coord) {
   paintEntry.rgb /= pa;
 
   // Gate sub-pixel alpha to kill residual sampling noise.
-  // Thresholds are deliberately low (≈1.3–3.8 in byte space) because
-  // post-unpremul the RGB is correct at any alpha ≥ 0 — we only need
+  // Thresholds are deliberately low (\u22481.3\u20133.8 in byte space) because
+  // post-unpremul the RGB is correct at any alpha \u2265 0 \u2014 we only need
   // to suppress samples that contribute negligibly to the final blend.
   // Using *= preserves the smooth edge; higher-alpha samples pass through.
   paintEntry.a *= smoothstep(0.005, 0.015, paintEntry.a);
@@ -69,4 +68,3 @@ half4 main(float2 coord) {
   return half4(blended, 1.0);
 }
 `;
-//# sourceMappingURL=regionPaint.sksl.js.map

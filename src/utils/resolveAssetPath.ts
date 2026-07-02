@@ -2,7 +2,7 @@ import { Image, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import { ensurePngFile, toPngFileName } from './pngImage';
 
-/** 将 require() 资源解析为 PNG 本地路径（OpenCV / RNFS 可读） */
+/** Resolve a require() asset to a PNG local path (readable by OpenCV / RNFS) */
 export async function resolveAssetPath(
   assetModule: number,
   cacheFileName: string,

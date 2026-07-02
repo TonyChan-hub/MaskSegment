@@ -9,14 +9,14 @@ import {
 } from 'react-native-fast-opencv';
 
 export const PNG_EXT = '.png';
-/** PNG 压缩级别 0 = 无损 */
+/** PNG compression level 0 = lossless */
 export const PNG_COMPRESSION = 0;
 
 export function normalizePath(path: string): string {
   return path.startsWith('file://') ? path.slice(7) : path;
 }
 
-/** Skia useImage 需要 URI；OpenCV / RNFS 使用裸路径 */
+/** Skia useImage requires a URI; OpenCV / RNFS use bare paths */
 export function toSkiaUri(path: string | null | undefined): string | null {
   if (!path) {
     return null;
@@ -54,7 +54,7 @@ function hashPath(path: string): string {
   return hashString(path);
 }
 
-/** 按文件元数据生成指纹，避免整文件读入（原 base64 全量哈希在 1.5MB 图上极慢） */
+/** Generate fingerprint from file metadata to avoid full-file read (original base64 full hash was extremely slow on 1.5MB images) */
 export async function fileContentFingerprint(path: string): Promise<string> {
   const normalized = normalizePath(path);
   const stat = await RNFS.stat(normalized);
@@ -91,7 +91,7 @@ async function cleanupStaleVersionedCache(
   }
 }
 
-/** 任意图片路径 → 缓存目录下的 PNG 文件路径（已是 PNG 则复制，否则解码转存） */
+/** Any image path → PNG file path under cache dir (copy if already PNG, otherwise decode and save) */
 export async function ensurePngFile(
   sourcePath: string,
   cacheFileName: string,
@@ -126,7 +126,7 @@ export async function ensurePngFile(
   return dest;
 }
 
-/** 根据源路径生成稳定 PNG 缓存名 */
+/** Generate a stable PNG cache name from the source path */
 export function pngCacheName(sourcePath: string, prefix: string): string {
   return `${prefix}_${hashPath(normalizePath(sourcePath))}${PNG_EXT}`;
 }
@@ -139,7 +139,7 @@ const DERIVED_CACHE_PREFIXES = [
   'tmp_',
 ];
 
-/** 清理分割/OpenCV 派生缓存，保留原图与掩码源文件 */
+/** Clean up segmentation/OpenCV derived cache, keep original image and mask source files */
 export async function clearDerivedImageCache(): Promise<number> {
   const files = await RNFS.readDir(RNFS.CachesDirectoryPath);
   let removed = 0;
@@ -191,10 +191,10 @@ function pngColorTypeToChannels(colorType: number): number {
   }
 }
 
-/** 从 base64 解析 PNG IHDR（不依赖 OpenCV），用于 16-bit Mat toJSValue 崩溃时的降级通路 */
+/** Parse PNG IHDR from base64 (without OpenCV), used as fallback when 16-bit Mat toJSValue crashes */
 export function readPngHeaderFromBase64(base64: string): PngHeader {
-  // PNG 签名 8 字节 + IHDR 长度 4 + "IHDR" 4 + 宽 4 + 高 4 + 位深 1 + 颜色类型 1 = 26 字节
-  // base64 每 3 字节 → 4 字符，取前 40 字符覆盖 ~30 字节
+  // PNG signature 8 bytes + IHDR length 4 + "IHDR" 4 + width 4 + height 4 + bit depth 1 + color type 1 = 26 bytes
+  // base64 every 3 bytes → 4 chars, take first 40 chars covering ~30 bytes
   const headerPart = base64.slice(0, 40);
   const binary = atob(headerPart);
 
@@ -208,7 +208,7 @@ export function readPngHeaderFromBase64(base64: string): PngHeader {
     );
   }
 
-  // 校验 PNG 签名
+  // Verify PNG signature
   const sig = [137, 80, 78, 71, 13, 10, 26, 10];
   for (let i = 0; i < 8; i++) {
     if (binary.charCodeAt(i) !== sig[i]) {
@@ -228,13 +228,13 @@ export function readPngHeaderFromBase64(base64: string): PngHeader {
   return { width, height, bitDepth, colorType };
 }
 
-/** 16-bit / float Mat → 8-bit（fast-opencv 在 patch 前 toJSValue 会截断高位）。
+/** 16-bit / float Mat → 8-bit (fast-opencv toJSValue truncates high bits before patch).
  *  Semantic mask PNGs use 16-bit RGB where the label (0-255) is stored as value×257;
  *  use 1/257 scaling for 3+ channel 16-bit cases so the resulting 8-bit channels contain
  *  the original semantic label values (consistent with the native ensure8U patch).
  *
- *  pngHeader 可选：当 toJSValue 因 16-bit Mat 崩溃时，用 PNG 文件头信息做降级转换，
- *  绕过原生 toJSValue 调用。
+ *  pngHeader (optional): when toJSValue crashes due to 16-bit Mat, use PNG file header info
+ *  for fallback conversion, bypassing native toJSValue call.
  */
 export function ensureMat8U(
   srcMat: Mat,
@@ -257,13 +257,13 @@ export function ensureMat8U(
       );
     }
 
-    // 降级通路: 16-bit PNG 的 Mat 无法通过 toJSValue 读取元数据，
-    // 直接使用 PNG 文件头中的宽高和位深信息做 convertTo
+    // Fallback path: 16-bit PNG Mat cannot read metadata via toJSValue,
+    // use width/height and bit depth info from PNG file header for convertTo
     const { width: cols, height: rows, bitDepth, colorType } = pngHeader;
     const ch = pngColorTypeToChannels(colorType);
 
     if (bitDepth <= 8) {
-      // 8-bit 或更低，不需要 convertTo，直接返回
+      // 8-bit or lower, no convertTo needed, return as-is
       return { mat: srcMat, extraReleaseIds: [] };
     }
 
@@ -280,7 +280,7 @@ export function ensureMat8U(
       outType,
     ) as Mat;
 
-    // 16-bit RGB 语义掩码: 标签值 = 原始值 / 257
+    // 16-bit RGB semantic mask: label value = original value / 257
     const alpha = ch >= 3 ? 1 / 257 : 255 / 65535;
     OpenCV.invoke('convertTo', srcMat, dstMat, outType, alpha, 0);
     return { mat: dstMat, extraReleaseIds: [dstMat.id] };
@@ -382,7 +382,7 @@ function isPngByBase64Magic(base64: string): boolean {
   }
 }
 
-/** base64 PNG → 连续 BGR 缓冲（OpenCV 原生解码，跳过 JS atob + upng） */
+/** base64 PNG → continuous BGR buffer (OpenCV native decode, bypassing JS atob + upng) */
 function decodeBase64PngToBgr(base64: string): {
   buffer: Uint8Array;
   cols: number;
@@ -414,12 +414,12 @@ function decodeBase64PngToBgr(base64: string): {
   }
   const releaseIds: string[] = [srcMat.id];
   try {
-    // 先解析 PNG 文件头（宽高、位深），供 ensureMat8U 在 16-bit toJSValue 崩溃时降级使用
+    // Parse PNG file header (width, height, bit depth) first, for ensureMat8U fallback when 16-bit toJSValue crashes
     let pngHeader: PngHeader | undefined;
     try {
       pngHeader = readPngHeaderFromBase64(base64);
     } catch {
-      // 非 PNG 或解析失败，不传 header，确保 retain 原有行为
+      // Not a PNG or parse failed, skip header to keep original behavior
     }
 
     let workMat: Mat;

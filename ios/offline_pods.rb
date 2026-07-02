@@ -1,4 +1,4 @@
-# CocoaPods 拉取 React Native 第三方库时走 GitHub 镜像，解决 github.com SSL/连接失败
+# Use GitHub mirror when CocoaPods pulls React Native third-party libraries, to resolve github.com SSL/connection failures
 require_relative '../node_modules/react-native/scripts/cocoapods/helpers.rb'
 
 github_mirror = ENV.fetch('COCOAPODS_GITHUB_MIRROR', 'https://ghproxy.net/https://github.com')

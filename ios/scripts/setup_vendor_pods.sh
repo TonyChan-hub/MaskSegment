@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 可选：预检 GitHub 镜像是否可用（默认镜像见 ios/offline_pods.rb）
+# Optional: pre-check GitHub mirror availability (default mirror see ios/offline_pods.rb)
 set -euo pipefail
 
 MIRROR="${COCOAPODS_GITHUB_MIRROR:-https://ghproxy.net/https://github.com}"

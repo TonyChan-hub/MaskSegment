@@ -40,4 +40,3 @@ export declare function setMaskSegmentRuntimeConfig(input?: {
 }): ResolvedMaskSegmentRuntime;
 export declare function getMaskSegmentRuntimeConfig(): ResolvedMaskSegmentRuntime;
 export declare function resetMaskSegmentRuntimeConfig(): ResolvedMaskSegmentRuntime;
-//# sourceMappingURL=maskSegmentRuntime.d.ts.map

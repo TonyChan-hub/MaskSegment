@@ -6,11 +6,11 @@ import {
 export type MaskSemanticColor = {
   name: string;
   hex: string;
-  /** 参考色（BGR，与掩码 buffer 通道一致） */
+  /** reference color (BGR, consistent with mask buffer channel) */
   bgr: { b: number; g: number; r: number };
 };
 
-/** 掩码语义色表（与后端分区颜色参考一致） */
+/** mask semantic color table (consistent with backend partition color reference) */
 export const MASK_SEMANTIC_COLORS: MaskSemanticColor[] = [
   { name: 'door', hex: '#E6194B', bgr: { b: 75, g: 25, r: 230 } },
   { name: 'ceiling', hex: '#3CB44B', bgr: { b: 75, g: 180, r: 60 } },
@@ -101,7 +101,7 @@ function colorDistanceSq(
   return dr * dr + dg * dg + db * db;
 }
 
-/** 将掩码像素归类到最近的语义色（baseboard 仅严格橙色命中） */
+/** classify mask pixel to the nearest semantic color (baseboard only strictly hit orange) */
 export function classifyBgrPixelToSemantic(
   b: number,
   g: number,
@@ -144,7 +144,7 @@ export function getSemanticColorByName(name: string): MaskSemanticColor | undefi
 }
 
 /**
- * 踢脚线须更接近 #F58231 且明显优于黄柜 / 蓝墙，避免整块黄区被误判。
+ * The baseboard must be closer to #F58231 and significantly better than the yellow cabinet / blue wall, to avoid being mistakenly judged as a whole yellow area.
  */
 export function isStrictBaseboardPixel(
   b: number,
@@ -168,10 +168,10 @@ export function isBaseboardPixel(b: number, g: number, r: number): boolean {
   return isStrictBaseboardPixel(b, g, r);
 }
 
-/** 掩码上墙/柜交界细条的量化色 */
+/** quantized color of the wall/cabinet junction strip on the mask */
 export const BASEBOARD_STRIP_QUANT_KEYS = new Set(['0,255,255', '64,255,255']);
 
-/** 掩码上墙面量化色 */
+/** quantized color of the wall on the mask */
 export const WALL_QUANT_KEYS = new Set([
   '192,128,64',
   '192,64,64',
@@ -180,7 +180,7 @@ export const WALL_QUANT_KEYS = new Set([
   '128,128,64',
 ]);
 
-/** 掩码上柜/地面量化色 */
+/** quantized color of the cabinet/floor on the mask */
 export const CABINET_QUANT_KEYS = new Set([
   '0,192,255',
   '64,192,255',
